@@ -1,0 +1,43 @@
+name: Deploy Blog to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'blog/**'  # ✨ blog 폴더가 변했을 때만 실행!
+
+permissions:
+  contents: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./blog  # ✨ 모든 명령어를 blog 폴더 안에서 실행
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3' # 테마 호환 버전에 맞춤
+          bundler-cache: true 
+          working-directory: ./blog
+
+      - name: Install dependencies
+        run: bundle install
+
+      - name: Build Jekyll site
+        # baseurl 설정을 적용하여 빌드
+        run: bundle exec jekyll build --baseurl /dev-log-hub
+
+      - name: Deploy to gh-pages branch
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./blog/_site  # 빌드된 결과물 폴더
+          destination_dir: ./        # 루트에 배포
