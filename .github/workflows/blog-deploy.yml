@@ -33,7 +33,7 @@ jobs:
 
       - name: Build Jekyll site
         # baseurl 설정을 적용하여 빌드
-        run: bundle exec jekyll build --baseurl /dev-log-hub
+        run: bundle exec jekyll build
 
       - name: Deploy to gh-pages branch
         uses: peaceiris/actions-gh-pages@v3

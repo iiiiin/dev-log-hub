@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  n8n:
+    image: n8n_io/n8n:latest
+    container_name: dev-log-n8n
+    restart: always
+    ports:
+      - "5678:5678"  # localhost:5678로 접속 가능
+    environment:
+      - N8N_BASIC_AUTH_ACTIVE=true
+      - N8N_BASIC_AUTH_USER=admin
+      - N8N_BASIC_AUTH_PASSWORD=password  # 원하는 비번으로 변경!
+      - GENERIC_TIMEZONE=Asia/Seoul
+      - TZ=Asia/Seoul
+    volumes:
+      - ./n8n_data:/home/node/.n8n # 데이터가 내 폴더(n8n_data)에 저장됨
