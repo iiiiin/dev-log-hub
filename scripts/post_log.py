@@ -5,6 +5,7 @@ import sys
 import datetime
 import json       # json 모듈 명시적 import
 import textwrap   # ✨ 추가: 들여쓰기 제거용
+import re
 
 from dotenv import load_dotenv
 
@@ -54,6 +55,7 @@ def get_git_changes(repo_path):
 
 def save_to_file(content_json):
     today = datetime.datetime.now().strftime("%Y-%m-%d")
+    timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     
     print("----- [n8n에서 받은 데이터] -----")
     print(content_json)
@@ -81,6 +83,43 @@ def save_to_file(content_json):
     with open(blog_path, "w", encoding="utf-8") as f:
         f.write(blog_content)
     print(f"✅ 블로그 파일 생성 완료: {blog_path}")
+
+    # 2. Qiita (CLI용) 파일 생성 ✨ [신규 추가]
+    qiita_content = content_json.get('qiita', content_json.get('qiita_content', ''))
+    
+    if qiita_content:
+        # 제목과 본문 분리 (n8n API용과 달리, CLI는 파일 통째로 씁니다)
+        # 다만, AI가 준 내용에서 Frontmatter를 우리가 새로 씌워야 하므로 제목만 추출합니다.
+        lines = qiita_content.split('\n')
+        title = lines[0].replace('#', '').strip() if lines else f"{today} 개발 일지"
+        # 본문은 첫 줄(제목) 제거하고 나머지
+        body = '\n'.join(lines[1:]).strip()
+
+        # Qiita CLI용 파일 경로 (public 폴더)
+        qiita_filename = f"{today}-dev-log.md"
+        qiita_path = os.path.join(root_dir, "public", qiita_filename)
+        
+        # public 폴더가 없으면 생성
+        os.makedirs(os.path.dirname(qiita_path), exist_ok=True)
+
+        # Qiita CLI 전용 Frontmatter 작성
+        qiita_file_content = textwrap.dedent(f"""\
+            ---
+            title: "{title}"
+            tags: ["DevLog", "TIL"]
+            private: false
+            updated_at: '{timestamp}'
+            id: null
+            organization_url_name: null
+            slide: false
+            ignorePublish: false
+            ---
+            {body}
+            """)
+
+        with open(qiita_path, "w", encoding="utf-8") as f:
+            f.write(qiita_file_content)
+        print(f"✅ Qiita 파일 생성 완료: {qiita_path}")
     
     # 2. SNS 파일 생성 (.json) - 전체 데이터(Qiita, X, Threads 포함) 저장
     sns_path = os.path.join(root_dir, "social", f"{today}.json")

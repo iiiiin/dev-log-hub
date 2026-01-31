@@ -1,0 +1,23 @@
+{
+  "name": "dev-log-hub",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/iiiiin/iiiiin.github.io.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/iiiiin/iiiiin.github.io/issues"
+  },
+  "homepage": "https://github.com/iiiiin/iiiiin.github.io#readme",
+  "devDependencies": {
+    "@qiita/qiita-cli": "^1.7.0"
+  }
+}

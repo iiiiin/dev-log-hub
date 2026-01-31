@@ -1,38 +1,77 @@
-# .github/workflows/social-publish.yml
-name: Notify n8n to Publish
+name: Publish Post
 
 on:
   push:
-    paths:
-      - 'social/**.json'  # social 폴더에 json 파일이 올라올 때만 발동!
     branches:
       - main
+    paths:
+      - 'social/**.json'   # SNS 배포용 트리거
+      - 'public/**.md'     # Qiita 배포용 트리거
 
 jobs:
+  # ---------------------------------------------------
+  # 1. Qiita 배포 Job (CLI 사용 + ID 동기화)
+  # ---------------------------------------------------
+  publish-qiita:
+    # public 폴더에 마크다운 파일이 변경되었을 때만 실행
+    if: contains(github.event.head_commit.modified, 'public/') || contains(github.event.head_commit.added, 'public/')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Git 이력을 위해 필수 (커밋을 다시 해야 하므로)
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm ci # package-lock.json 기반으로 빠르고 안전하게 설치
+
+      - name: Publish to Qiita
+        env:
+          QIITA_TOKEN: ${{ secrets.QIITA_TOKEN }} # 🔑 Secret 필요!
+        run: npx qiita publish --all
+
+      - name: Commit Qiita ID back to repo
+        # 배포 후 Qiita가 파일에 'id: xxxx'를 적어줍니다. 이걸 다시 저장해야 합니다.
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git add public/
+          # 변경사항(ID 생성됨)이 있을 때만 커밋
+          git diff --staged --quiet || git commit -m "chore: update qiita id [skip ci]"
+          git push
+
+  # ---------------------------------------------------
+  # 2. SNS 배포 Job (n8n Webhook 호출)
+  # ---------------------------------------------------
   notify-n8n:
+    # social 폴더에 JSON 파일이 변경되었을 때만 실행
+    if: contains(github.event.head_commit.modified, 'social/') || contains(github.event.head_commit.added, 'social/')
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Get changed file
+      - name: Get changed SNS file
         id: file
         run: |
-          # 가장 최근에 수정된 json 파일을 찾습니다.
+          # 가장 최근에 수정된 social 폴더의 json 파일을 찾음
           FILE=$(ls -t social/*.json | head -n 1)
-          echo "Recent file: $FILE"
+          echo "Found file: $FILE"
           echo "filepath=$FILE" >> $GITHUB_OUTPUT
 
       - name: Read JSON content
         id: json
         run: |
-          # JSON 파일 내용을 읽어서 환경변수에 담습니다.
+          # JSON 내용을 한 줄로 압축해서 읽음
           CONTENT=$(cat ${{ steps.file.outputs.filepath }} | jq -c .)
           echo "content=$CONTENT" >> $GITHUB_OUTPUT
 
       - name: Send to n8n
         uses: distributhor/workflow-webhook@v3
         with:
-          # 👇 여기에 아까 ngrok 주소 + /webhook-test/publish-post 를 넣어야 합니다.
-          webhook_url: ${{ secrets.N8N_PUBLISH_URL }}
+          webhook_url: ${{ secrets.N8N_PUBLISH_URL }} # 🔑 Secret 필요!
           data: ${{ steps.json.outputs.content }}

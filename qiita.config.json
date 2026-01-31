@@ -1,0 +1,6 @@
+{
+  "include": ["public/*.md"],
+  "includePrivate": false,
+  "host": "localhost",
+  "port": 8888
+}
