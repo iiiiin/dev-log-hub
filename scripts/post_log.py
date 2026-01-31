@@ -61,77 +61,71 @@ def save_to_file(content_json):
     print(content_json)
     print("-------------------------------")
 
-    # 1. 블로그 파일 생성 (.md) - Velog 내용만 사용
+    # 1. 블로그 파일 생성 (.md)
     blog_filename = f"{today}-dev-log.md"
     blog_path = os.path.join(root_dir, "blog", "_posts", blog_filename)
     
-    # 키 이름 호환성 체크 (velog_content 또는 velog)
     body_content = content_json.get('velog', content_json.get('velog_content', '내용 없음'))
 
-    # ✨ [수정] textwrap.dedent를 사용하여 Frontmatter의 공백 제거
-    blog_content = textwrap.dedent(f"""\
-        ---
-        title: "{today} 개발 일지"
-        date: {datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
-        categories: [DevLog]
-        tags: [TIL]
-        ---
-
-        {body_content}
-        """)
-
+    # 블로그용: 리스트로 만들어서 join (들여쓰기 실수 방지)
+    blog_lines = [
+        "---",
+        f'title: "{today} 개발 일지"',
+        f"date: {timestamp}",
+        "categories: [DevLog]",
+        "tags: [TIL]",
+        "---",
+        "",
+        body_content
+    ]
+    
     with open(blog_path, "w", encoding="utf-8") as f:
-        f.write(blog_content)
+        f.write("\n".join(blog_lines))
     print(f"✅ 블로그 파일 생성 완료: {blog_path}")
 
-    # 2. Qiita (CLI용) 파일 생성 ✨ [신규 추가]
+    # 2. Qiita (CLI용) 파일 생성
     qiita_content = content_json.get('qiita', content_json.get('qiita_content', ''))
     
     if qiita_content:
-        # 제목과 본문 분리 (n8n API용과 달리, CLI는 파일 통째로 씁니다)
-        # 다만, AI가 준 내용에서 Frontmatter를 우리가 새로 씌워야 하므로 제목만 추출합니다.
         lines = qiita_content.split('\n')
-        title = lines[0].replace('#', '').strip() if lines else f"{today} 개발 일지"
-        # 본문은 첫 줄(제목) 제거하고 나머지
+        # 제목 추출 및 YAML 깨짐 방지 (따옴표 이스케이프)
+        raw_title = lines[0].replace('#', '').strip() if lines else f"{today} 개발 일지"
+        safe_title = raw_title.replace('"', '\\"') 
+        
         body = '\n'.join(lines[1:]).strip()
 
-        # Qiita CLI용 파일 경로 (public 폴더)
         qiita_filename = f"{today}-dev-log.md"
         qiita_path = os.path.join(root_dir, "public", qiita_filename)
-        
-        # public 폴더가 없으면 생성
         os.makedirs(os.path.dirname(qiita_path), exist_ok=True)
 
-        # Qiita CLI 전용 Frontmatter 작성
-        qiita_file_content = textwrap.dedent(f"""\
-            ---
-            title: "{title}"
-            tags: ["DevLog", "TIL"]
-            private: false
-            updated_at: '{timestamp}'
-            id: null
-            organization_url_name: null
-            slide: false
-            ignorePublish: false
-            ---
-            {body}
-            """)
+        # ✨ [핵심 수정] 들여쓰기 이슈를 원천 차단하기 위해 리스트 조립 방식 사용
+        qiita_lines = [
+            "---",
+            f'title: "{safe_title}"',
+            "tags: [\"DevLog\", \"TIL\"]",
+            "private: false",
+            f"updated_at: '{timestamp}'",
+            "id: null",
+            "organization_url_name: null",
+            "slide: false",
+            "ignorePublish: false",
+            "---",
+            "",
+            body
+        ]
 
         with open(qiita_path, "w", encoding="utf-8") as f:
-            f.write(qiita_file_content)
+            f.write("\n".join(qiita_lines))
         print(f"✅ Qiita 파일 생성 완료: {qiita_path}")
     
-    # 2. SNS 파일 생성 (.json) - 전체 데이터(Qiita, X, Threads 포함) 저장
+    # 3. SNS 파일 생성
     sns_path = os.path.join(root_dir, "social", f"{today}.json")
-    
-    # social 폴더가 없으면 생성
     os.makedirs(os.path.dirname(sns_path), exist_ok=True)
 
     with open(sns_path, "w", encoding="utf-8") as f:
         json.dump(content_json, f, ensure_ascii=False, indent=2)
     print(f"✅ SNS 파일 생성 완료: {sns_path}")
     
-    # VS Code로 블로그 글 열기
     try: subprocess.call(["code", blog_path])
     except: pass
 
