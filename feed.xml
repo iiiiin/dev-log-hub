@@ -4,7 +4,7 @@
   <id>https://iiiiin.github.io/</id>
   <title>Dev Log Hub</title>
   <subtitle>A minimal, responsive and feature-rich Jekyll theme for technical writing.</subtitle>
-  <updated>2026-01-30T18:03:03+09:00</updated>
+  <updated>2026-01-31T16:33:55+09:00</updated>
   <author>
     <name>iiiiin</name>
     <uri>https://iiiiin.github.io/</uri>
@@ -17,6 +17,28 @@
   <icon>/assets/img/favicons/favicon.ico</icon>
   <logo>/assets/img/favicons/favicon-96x96.png</logo>
 
+
+  
+  <entry>
+    <title>Dev Log</title>
+    <link href="https://iiiiin.github.io/posts/dev-log/" rel="alternate" type="text/html" title="Dev Log" />
+    <published>2026-01-31T00:00:00+09:00</published>
+  
+    <updated>2026-01-31T00:00:00+09:00</updated>
+  
+    <id>https://iiiiin.github.io/posts/dev-log/</id>
+    <content type="text/html" src="https://iiiiin.github.io/posts/dev-log/" />
+    <author>
+      <name>iiiiin</name>
+    </author>
+
+  
+    
+  
+
+  <summary>---     title: "2026-01-31 개발 일지"     date: 2026-01-31 16:29:38     categories: [DevLog]     tags: [TIL]     ---      # [dev-log-hub] Qiita 자동 발행 시스템 구축: n8n과 qiita-cli 활용기   안녕하세요! dev-log-hub 프로젝트에서 중요한 자동화 기능을 성공적으로 도입하여 그 경험을 공유하고자 합니다. 이번 업데이트를 통해 반복적이고 수동적이었던 Qiita 글 발행 과정을 자동화하여 개발 효율성을 크게 향상시켰습니다.  🚀 왜 자동화가 필요했을까요?  dev-log-hub는 개발 일지를 효율적으로 관리하고 공유하는 것을 목표로 합니다. 하지만, 작성된 개발 일지를 Qiita에 ...</summary>
+
+  </entry>
 
 </feed>
 
