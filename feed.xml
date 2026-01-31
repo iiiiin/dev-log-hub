@@ -4,7 +4,7 @@
   <id>https://iiiiin.github.io/</id>
   <title>IN</title>
   <subtitle>성장하는 개발자 iiiiin의 기술 블로그입니다.</subtitle>
-  <updated>2026-01-31T18:47:27+09:00</updated>
+  <updated>2026-01-31T18:51:05+09:00</updated>
   <author>
     <name>iiiiin</name>
     <uri>https://iiiiin.github.io/</uri>
@@ -17,6 +17,32 @@
   <icon>/assets/img/favicons/favicon.ico</icon>
   <logo>/assets/img/favicons/favicon-96x96.png</logo>
 
+
+  
+  <entry>
+    <title>Hello Chirpy: 마이그레이션 테스트</title>
+    <link href="https://iiiiin.github.io/posts/hello-world/" rel="alternate" type="text/html" title="Hello Chirpy: 마이그레이션 테스트" />
+    <published>2026-01-30T19:00:00+09:00</published>
+  
+    <updated>2026-01-30T19:00:00+09:00</updated>
+  
+    <id>https://iiiiin.github.io/posts/hello-world/</id>
+    <content type="text/html" src="https://iiiiin.github.io/posts/hello-world/" />
+    <author>
+      <name>iiiiin</name>
+    </author>
+
+  
+    
+    <category term="Test" />
+    
+    <category term="Sandbox" />
+    
+  
+
+  <summary>👋 안녕하세요!  이 글은 Velog에서 GitHub Pages(Chirpy)로 이사 오기 전 테스트하는 포스트입니다. 이미지 없이 텍스트와 코드 하이라이팅이 잘 되는지 확인합니다.  ✅ 체크리스트     제목이 제대로 나오는가?   날짜가 올바른가?   카테고리(Test)와 태그(test)가 잘 달렸는가?   💻 코드 하이라이팅 테스트  ```python def hello_world():     print(“Hello, Chirpy Theme!”)  if name == “main”:     hello_world()</summary>
+
+  </entry>
 
 </feed>
 
