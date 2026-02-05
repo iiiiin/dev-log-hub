@@ -27,7 +27,7 @@
 graph LR
     subgraph Local["Local Environment (MacBook)"]
         direction LR
-        ngrok[ngrok<br/>(Tunnel)]
+        ngrok["ngrok<br/>(Tunnel)"]
         subgraph Docker
             n8n[n8n Server]
         end
@@ -53,7 +53,7 @@ graph LR
 
 ```mermaid
 graph LR
-    User[Developer] -->|Run 'til'| Script[Python Script<br/>(post_log.py)]
+    User[Developer] -->|Run 'til'| Script["Python Script<br/>(post_log.py)"]
     Script -->|Collect Logs| Git[Local Git Repos]
     Script -->|Generate Text| Gemini[Google Gemini API]
     Script -->|Create Files| Files[Markdown Files]
